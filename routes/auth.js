@@ -2,7 +2,6 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-const { protect, generateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -53,13 +52,6 @@ router.post('/register', [
 
     await user.save();
 
-    // Generate token
-    const token = generateToken(user._id);
-
-    // Update last login
-    user.lastLogin = new Date();
-    await user.save();
-
     res.status(201).json({
       message: 'Account created successfully',
       user: {
@@ -68,8 +60,7 @@ router.post('/register', [
         email: user.email,
         role: user.role,
         isVerified: user.isVerified
-      },
-      token
+      }
     });
 
   } catch (error) {
@@ -136,9 +127,6 @@ router.post('/login', [
     user.lastLogin = new Date();
     await user.save();
 
-    // Generate token
-    const token = generateToken(user._id);
-
     res.json({
       message: 'Login successful',
       user: {
@@ -147,8 +135,7 @@ router.post('/login', [
         email: user.email,
         role: user.role,
         isVerified: user.isVerified
-      },
-      token
+      }
     });
 
   } catch (error) {
@@ -162,7 +149,7 @@ router.post('/login', [
 // @route   GET /api/auth/me
 // @desc    Get current user profile
 // @access  Private
-router.get('/me', protect, async (req, res) => {
+router.get('/me', async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     res.json({
@@ -187,7 +174,7 @@ router.get('/me', protect, async (req, res) => {
 // @route   PUT /api/auth/profile
 // @desc    Update user profile
 // @access  Private
-router.put('/profile', protect, [
+router.put('/profile', [
   body('name')
     .optional()
     .trim()
@@ -255,7 +242,7 @@ router.put('/profile', protect, [
 // @route   POST /api/auth/logout
 // @desc    Logout user (client-side token removal)
 // @access  Private
-router.post('/logout', protect, (req, res) => {
+router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out successfully' });
 });
 
