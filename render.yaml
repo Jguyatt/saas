@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: agency-host-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: CORS_ORIGIN
+        value: https://your-frontend-domain.com
+      - key: BCRYPT_ROUNDS
+        value: 12
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+databases:
+  - name: agency-host-db
+    databaseName: agencyhost
+    user: agencyhost 

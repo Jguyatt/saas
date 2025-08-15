@@ -1,0 +1,21 @@
+[build]
+  functions = "functions"
+  publish = "public"
+
+[build.environment]
+  NODE_ENV = "production"
+  JWT_SECRET = "your-jwt-secret-here"
+  RATE_LIMIT_WINDOW_MS = "900000"
+  RATE_LIMIT_MAX_REQUESTS = "100"
+  CORS_ORIGIN = "https://your-frontend-domain.com"
+  BCRYPT_ROUNDS = "12"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 
